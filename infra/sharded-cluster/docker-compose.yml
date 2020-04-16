@@ -1,0 +1,151 @@
+version: '3.7'
+
+services:
+
+    mongo-config-server-rs-node1:
+        container_name: mongo-config-server-rs-node1
+        image: mongo
+        command: mongod --configsvr --replSet rs-config-server
+        volumes: 
+            - ./config-rs-config-server.js:/root/config.js
+        ports: 
+            - 50004:27019
+        networks: 
+            - network-mongo
+        depends_on: 
+            - mongo-config-server-rs-node2
+            - mongo-config-server-rs-node3        
+         
+    mongo-config-server-rs-node2:
+        container_name: mongo-config-server-rs-node2
+        image: mongo
+        command: mongod --configsvr --replSet rs-config-server
+        ports: 
+            - 50005:27019
+        networks: 
+            - network-mongo
+
+    mongo-config-server-rs-node3:
+        container_name: mongo-config-server-rs-node3
+        image: mongo
+        command: mongod --configsvr --replSet rs-config-server
+        ports: 
+            - 50006:27019
+        networks: 
+            - network-mongo
+
+    mongo-mongos:
+        container_name: mongo-mongos
+        image: mongo
+        command: mongos --bind_ip 0.0.0.0 --configdb rs-config-server/mongo-config-server-rs-node1:27019,mongo-config-server-rs-node2:27019,mongo-config-server-rs-node3:27019
+        volumes: 
+            - ./config-mongos.js:/root/config.js
+        ports: 
+            - 50044:27017
+        networks: 
+            - network-mongo
+        depends_on: 
+            - mongo-config-server-rs-node1
+            - mongo-shard1-rs-node1
+            - mongo-shard2-rs-node1
+            - mongo-shard3-rs-node1
+            
+    mongo-shard1-rs-node1:
+        container_name: mongo-shard1-rs-node1
+        image: mongo
+        command: mongod --shardsvr --replSet rs-shard1
+        volumes: 
+            - ./config-rs.js:/root/config.js
+        ports: 
+            - 50014:27018
+        networks: 
+            - network-mongo
+        depends_on: 
+            - mongo-shard1-rs-node2
+            - mongo-shard1-rs-node3
+
+    mongo-shard1-rs-node2:
+        container_name: mongo-shard1-rs-node2
+        image: mongo
+        command: mongod --shardsvr --replSet rs-shard1
+        ports: 
+            - 50015:27018
+        networks: 
+            - network-mongo
+
+    mongo-shard1-rs-node3:
+        container_name: mongo-shard1-rs-node3
+        image: mongo
+        command: mongod --shardsvr --replSet rs-shard1
+        ports: 
+            - 50016:27019
+        networks: 
+            - network-mongo
+
+    mongo-shard2-rs-node1:
+        container_name: mongo-shard2-rs-node1
+        image: mongo
+        command: mongod --shardsvr --replSet rs-shard2
+        volumes: 
+            - ./config-rs-shard2.js:/root/config.js
+        ports: 
+            - 50024:27018
+        networks: 
+            - network-mongo
+        depends_on: 
+            - mongo-shard2-rs-node2
+            - mongo-shard2-rs-node3
+            
+    mongo-shard2-rs-node2:
+        container_name: mongo-shard2-rs-node2
+        image: mongo
+        command: mongod --shardsvr --replSet rs-shard2
+        ports: 
+            - 50025:27018
+        networks: 
+            - network-mongo
+
+    mongo-shard2-rs-node3:
+        container_name: mongo-shard2-rs-node3
+        image: mongo
+        command: mongod --shardsvr --replSet rs-shard2
+        ports: 
+            - 50026:27018
+        networks: 
+            - network-mongo
+
+    mongo-shard3-rs-node1:
+        container_name: mongo-shard3-rs-node1
+        image: mongo
+        command: mongod --shardsvr --replSet rs-shard3
+        volumes: 
+            - ./config-rs-shard3.js:/root/config.js
+        ports: 
+            - 50034:27018
+        networks: 
+            - network-mongo
+        depends_on: 
+            - mongo-shard3-rs-node2
+            - mongo-shard3-rs-node3
+
+    mongo-shard3-rs-node2:
+        container_name: mongo-shard3-rs-node2
+        image: mongo
+        command: mongod --shardsvr --replSet rs-shard3
+        ports: 
+            - 50035:27018
+        networks: 
+            - network-mongo
+
+    mongo-shard3-rs-node3:
+        container_name: mongo-shard3-rs-node3
+        image: mongo
+        command: mongod --shardsvr --replSet rs-shard3
+        ports: 
+            - 50036:27018
+        networks: 
+            - network-mongo
+    
+networks: 
+    network-mongo:
+

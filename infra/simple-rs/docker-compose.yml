@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+
+    rs-node1:
+        container_name: simple-rs-node1
+        image: mongo
+        command: mongod --replSet simple-rs --port 50051
+        volumes: 
+            - ./config-rs.js:/root/config.js
+        ports: 
+            - 50051:50051
+        networks:
+            - network-simple-rs
+        depends_on: 
+            - rs-node2
+            - rs-node3
+         
+    rs-node2:
+        container_name: simple-rs-node2
+        image: mongo
+        command: mongod --replSet simple-rs --port 50052
+        ports: 
+            - 50052:50052
+        networks:
+            - network-simple-rs
+
+    rs-node3:
+        container_name: simple-rs-node3
+        image: mongo
+        command: mongod --replSet simple-rs --port 50053
+        ports: 
+            - 50053:50053
+        networks:
+            - network-simple-rs
+
+networks:
+    network-simple-rs:
+
