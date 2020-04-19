@@ -18,4 +18,4 @@ sleep 15
 docker exec -it mongo-mongos sh -c "mongo localhost:27017 /root/config.js"
 
 mongo localhost:50044 setup-sharded-col.js
-mongo localhost:50044 fill-sharded-col.js
+#mongo localhost:50044 fill-sharded-col.js
