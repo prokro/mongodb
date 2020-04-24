@@ -1,0 +1,15 @@
+simple rs
+
+[info] Parameters(number inserted carts -> 100): 59.19822 ms
+[info] Parameters(number inserted carts -> 200): 121.83769 ms
+[info] Parameters(number inserted carts -> 300): 203.081947 ms
+[info] Parameters(number inserted carts -> 400): 246.874536 ms
+[info] Parameters(number inserted carts -> 500): 314.30618 ms
+
+sharded cluster
+
+[info] Parameters(number inserted carts -> 100): 182.991689 ms
+[info] Parameters(number inserted carts -> 200): 362.543984 ms
+[info] Parameters(number inserted carts -> 300): 585.212777 ms
+[info] Parameters(number inserted carts -> 400): 762.951541 ms
+[info] Parameters(number inserted carts -> 500): 992.52318 ms

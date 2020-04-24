@@ -10,19 +10,19 @@ import scala.concurrent.duration._
 
 object Main extends App {
 
-  val mongos: MongoClient = MongoClient("mongodb://localhost:50044")
+  val client: MongoClient = MongoClients.mongos
 
   sync {
     for {
-      database <- mongos.listDatabaseNames()
+      database <- client.listDatabaseNames()
       _ = println(s"found database: $database")
     } yield ()
   }
 
-  val commerceDb = mongos.getDatabase("commerce")
+  val commerceDb = client.getDatabase("commerce")
   val cartsCol = commerceDb.getCollection[DBObject]("carts")
 
-  def cartTask(product: String): Task[Completed] = Task.deferFuture {
+  def insertCartTask(product: String): Task[Completed] = Task.deferFuture {
     cartsCol.insertOne(Cart.toDbObject(Cart(product = product))).toFuture
   }
 
@@ -30,7 +30,7 @@ object Main extends App {
   val source = MonixObservable.range(0, 1000)
   val processed = source.mapParallelUnordered(parallelism = 10) { i =>
     val product = s"product $nowFormatted $i"
-    cartTask(product)
+    insertCartTask(product)
   }
   val result: Task[List[Completed]] = processed.toListL
 

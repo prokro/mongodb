@@ -11,7 +11,7 @@ object Util {
     result
   }
 
-  def nowFormatted(now: Date = new Date(), pattern: String = "HH:mm"): String = {
+  def nowFormatted(now: Date = new Date(), pattern: String = "HH:mm:ss"): String = {
     val nowFormat = new SimpleDateFormat(pattern)
     nowFormat.format(now)
   }
