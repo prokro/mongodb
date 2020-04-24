@@ -1,10 +1,12 @@
-import java.util.UUID
+import com.mongodb.DBObject
+import monix.eval._
+import monix.execution.Scheduler.Implicits.global
+import monix.reactive.{Observable => MonixObservable}
+import org.mongodb.scala.model.Sorts
+import org.mongodb.scala.{Completed, MongoClient, Observable}
 
-import com.mongodb.{BasicDBObject, DBObject}
-
-import scala.concurrent.{Await, ExecutionContextExecutor, Future}
+import scala.concurrent.Await
 import scala.concurrent.duration._
-import org.mongodb.scala.{MongoClient, Observable}
 
 object Main extends App {
 
@@ -20,33 +22,36 @@ object Main extends App {
   val commerceDb = mongos.getDatabase("commerce")
   val cartsCol = commerceDb.getCollection[DBObject]("carts")
 
-  sync {
-    // todo check why not always 1000 carts are inserted
-    (1 to 1000) map { i =>
-      cartsCol.insertOne {
-        val dbObj = new BasicDBObject
-        dbObj.put("_id", UUID.randomUUID())
-        dbObj.put("name", s"product $i")
-        dbObj
-      }
-    }
+  def cartTask(product: String): Task[Completed] = Task.deferFuture {
+    cartsCol.insertOne(Cart.toDbObject(Cart(product = product))).toFuture
   }
+
+  val nowFormatted = Util.nowFormatted()
+  val source = MonixObservable.range(0, 1000)
+  val processed = source.mapParallelUnordered(parallelism = 10) { i =>
+    val product = s"product $nowFormatted $i"
+    cartTask(product)
+  }
+  val result: Task[List[Completed]] = processed.toListL
+
+  Util.time(result.runSyncUnsafe())
+
+  import Sorts._
 
   sync {
     for {
       count <- cartsCol.countDocuments()
       _ = println(s"count: $count")
-      cart <- cartsCol.find()
+
+      cart <- cartsCol
+        .find()
+        .sort(orderBy(descending("createdAt")))
+        .limit(1)
       _ = println(cart)
     } yield ()
   }
 
-  implicit val ec: ExecutionContextExecutor = scala.concurrent.ExecutionContext.global
-
-  private def sync[T](block: => Seq[Observable[T]]): Unit =
-    Await.ready(Future.sequence(block.map(_.toFuture)), 1.hour)
-
   private def sync(block: Observable[Unit]): Unit =
-    Await.ready(block.toFuture, 30.seconds)
+    Await.ready(block.toFuture, 1.seconds)
 
 }
