@@ -13,6 +13,7 @@
 `db.adminCommand({ listShards: 1 })`
 
 ```
+// https://dzone.com/articles/composing-a-sharded-mongodb-on-docker
 // https://docs.mongodb.com/manual/reference/method/js-sharding/
 // READ https://www.slideshare.net/JasonTerpko/mongodb-sharded-cluster-tutorial-94682018
 // READ http://learnmongodbthehardway.com/schema/sharding/
