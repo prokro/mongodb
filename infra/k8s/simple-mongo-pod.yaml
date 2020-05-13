@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-mongo-pod
+  labels:
+    app: simple-mongo-test
+    type: mongodb
+spec:
+  containers:
+    - name: mongo-container
+      image: mongo
