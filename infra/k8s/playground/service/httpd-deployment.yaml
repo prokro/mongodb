@@ -1,0 +1,19 @@
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-test-deployment
+spec:
+  template:
+    metadata:
+      name: service-test-pod
+      labels:
+        app: service-test
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx
+  replicas: 3
+  selector:
+    matchLabels:
+      app: service-test

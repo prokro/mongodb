@@ -1,0 +1,15 @@
+# this can be connected to:
+# - look up pod IP: `kubectl get pod simple-httpd-pod -o wide`
+# - `minikube ssh`
+# - `curl <pod-ip>`
+# expected outcome: `<html><body><h1>It works!</h1></body></html>`
+apiVersion: v1
+kind: Pod
+metadata:
+  name: service-test-pod
+  labels:
+    app: service-test
+spec:
+  containers:
+    - name: alpine
+      image: httpd:alpine
