@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: test-rc
+spec:
+  template:
+    # pod (without apiVersion, kind)
+    metadata:
+      name: test-rc-pod
+      # without a label we run into `The ReplicationController "test-rc" is invalid: spec.selector: Required value`
+      # in this case labels is used instead, hence the error message if we omit it
+      labels:
+        # could also be `foo: bar`
+        selector: test-rs
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx
+  replicas: 3
