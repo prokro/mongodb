@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-depl
+spec:
+  template:
+    # pod (without apiVersion, kind)
+    metadata:
+      name: test-depl-pod
+      labels:
+        type: front-end
+        other: label
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx
+  replicas: 3
+  selector:
+    matchLabels:
+      type: front-end
