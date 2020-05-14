@@ -1,3 +1,5 @@
+# without a service there's no way to access the pod from outside
+# `kubectl logs simple-mongo-pod` will show that the pod was started alright
 apiVersion: v1
 kind: Pod
 metadata:
@@ -9,3 +11,7 @@ spec:
   containers:
     - name: mongo-container
       image: mongo
+      command:
+        - mongod
+      ports:
+        - containerPort: 27017
