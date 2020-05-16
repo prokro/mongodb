@@ -1,5 +1,6 @@
 # local test:
 # - minikube is (of course) not providing external IPs
+# - LoadBalancer falls back to NodePort in this case
 # - to test the setup, lookup the ports via `kubectl get services`
 # - it will be 80:<node-port>
 # - lookup node IP via `kubectl get nodes -o wide`
