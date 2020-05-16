@@ -1,3 +1,10 @@
+# local test:
+# - minikube is (of course) not providing external IPs
+# - to test the setup, lookup the ports via `kubectl get services`
+# - it will be 80:<node-port>
+# - lookup node IP via `kubectl get nodes -o wide`
+# - it is the INTERNAL-IP
+# - access http://<internal-ip>:<node-port>
 apiVersion: v1
 kind: Service
 metadata:
